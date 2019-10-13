@@ -27,7 +27,16 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     @Override
     public boolean add(E key) {
-        return false;
+        Node<E> node = search(key);
+        if (node == null) {
+            root = new Node<>(key);
+            return true;
+        } else if (node.getKey() == key) {
+            return false;
+        } else {
+            node.addChild(key);
+            return true;
+        }
     }
 
     @Override
@@ -38,7 +47,17 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     @Override
     public boolean remove(E key) {
-        return false;
+        Node<E> node = search(key);
+        if (node.getKey() == key) {
+            Node<E> replacement = node.getBiggestLeftChild();
+            if (replacement == null) {
+                node.getParent().addChild(node.getRightChild());
+            } else {
+                node.
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override
