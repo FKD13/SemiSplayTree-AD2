@@ -15,7 +15,8 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         this.splaySize = splaySize;
     }
 
-    private Node<E> search(E key) {
+    //public for testing purposes
+    public Node<E> search(E key) {
         Node<E> node = root;
         Node<E> pNode = null;
         while (node != null && node != pNode) {
@@ -47,31 +48,28 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     @Override
     public boolean remove(E key) {
-        System.out.println("Remove:  " + key);
         Node<E> node = search(key);
-        System.out.println("Found: " + node.getKey() + " Searched: " + key);
-        System.out.println(node);
-        if (node.getKey() == key) {
-            System.out.println(" Removing: " + key);
+        if (node.getKey().equals(key)) {
             remove(node);
             return true;
         } else {
-            System.out.println(" Aborting");
             return false;
         }
     }
 
     private void remove(Node<E> node) {
         Node<E> replacement = node.getBiggestLeftChild();
-        if (replacement == node) {
+        if (replacement.getKey() == node.getKey()) {
             if (node.getParent() != null) {
-                node.getParent().setRightChild(node.getRightChild());
-                replacement.getRightChild().setParent(replacement.getParent());
+                node.getParent().replace(node, node.getRightChild());
+                if (node.getRightChild() != null) {
+                    node.getRightChild().setParent(node.getParent());
+                }
             } else {
-                System.out.println("  setting Root: " + replacement.getRightChild().getKey());
-                root = replacement.getRightChild();
-                System.out.println("  New Root: " + root.getKey());
-                replacement.getRightChild().setParent(null);
+                root = node.getRightChild();
+                if (root != null) {
+                    replacement.getRightChild().setParent(null);
+                }
             }
         } else {
             remove(replacement);
@@ -84,13 +82,18 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
                     parent.setRightChild(replacement);
                 }
             } else {
-                System.out.println("  setting Root" + replacement.getKey());
                 root = replacement;
-                System.out.println("  ²&New Root: " + root.getKey());
             }
             replacement.setRightChild(node.getRightChild());
             replacement.setLeftChild(node.getLeftChild());
+            if (replacement.getRightChild() != null) {
+                replacement.getRightChild().setParent(replacement);
+            }
+            if (replacement.getLeftChild() != null) {
+                replacement.getLeftChild().setParent(replacement);
+            }
         }
+        node.reset();
     }
 
     @Override

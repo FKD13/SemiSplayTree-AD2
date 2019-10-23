@@ -85,6 +85,20 @@ public class Node<E extends Comparable<E>> {
         return "-------\nKey: " + getKey() + "\nParent: " + "Redacted" + "\nLeftchild: " + leftChild + "\nRighchild: " + rightChild + "\n--------\n";
     }
 
+    public void reset() {
+        leftChild = null;
+        rightChild = null;
+        parent = null;
+    }
+
+    public void replace(Node<E> original, Node<E> newNode) {
+        if (leftChild != null && leftChild.getKey() == original.getKey()) {
+            leftChild = newNode;
+        } else if (rightChild != null && rightChild.getKey() == original.getKey()) {
+            rightChild = newNode;
+        }
+    }
+
     //public void replaceWith(Node<E> node) {
     //    node.getParent();
     //    node.setParent(parent);
