@@ -81,13 +81,17 @@ public class Node<E extends Comparable<E>> {
         return biggestLeftChild;
     }
 
-    public void replaceWith(Node<E> node) {
-        node.getParent().
-        node.setParent(parent);
-        node.setLeftChild(leftChild);
-        node.setRightChild(rightChild);
-        parent.addChild(node);
-        leftChild.setParent(node);
-        rightChild.setParent(node);
+    public String toString() {
+        return "-------\nKey: " + getKey() + "\nParent: " + "Redacted" + "\nLeftchild: " + leftChild + "\nRighchild: " + rightChild + "\n--------\n";
     }
+
+    //public void replaceWith(Node<E> node) {
+    //    node.getParent();
+    //    node.setParent(parent);
+    //    node.setLeftChild(leftChild);
+    //    node.setRightChild(rightChild);
+    //    parent.addChild(node);
+    //    leftChild.setParent(node);
+    //    rightChild.setParent(node);
+    //}
 }

@@ -46,4 +46,13 @@ public class NodeTest {
         Assert.assertSame(j, k.searchChild(6).getKey());
         Assert.assertSame(j, k.searchChild(7).getKey());
     }
+
+    @Test
+    public void testGetBiggestLeftChild() {
+        Node<Integer> node1 = new Node<>(1);
+        Node<Integer> node2 = new Node<>(0);
+        node1.addChild(node2);
+        Assert.assertEquals(node2, node1.getBiggestLeftChild());
+        Assert.assertEquals(node2, node2.getBiggestLeftChild());
+    }
 }

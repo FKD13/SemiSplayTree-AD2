@@ -47,16 +47,49 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     @Override
     public boolean remove(E key) {
+        System.out.println("Remove:  " + key);
         Node<E> node = search(key);
+        System.out.println("Found: " + node.getKey() + " Searched: " + key);
+        System.out.println(node);
         if (node.getKey() == key) {
-            Node<E> replacement = node.getBiggestLeftChild();
-            if (replacement == null) {
-                node.getParent().addChild(node.getRightChild());
+            System.out.println(" Removing: " + key);
+            remove(node);
+            return true;
+        } else {
+            System.out.println(" Aborting");
+            return false;
+        }
+    }
+
+    private void remove(Node<E> node) {
+        Node<E> replacement = node.getBiggestLeftChild();
+        if (replacement == node) {
+            if (node.getParent() != null) {
+                node.getParent().setRightChild(node.getRightChild());
+                replacement.getRightChild().setParent(replacement.getParent());
             } else {
-                node.
+                System.out.println("  setting Root: " + replacement.getRightChild().getKey());
+                root = replacement.getRightChild();
+                System.out.println("  New Root: " + root.getKey());
+                replacement.getRightChild().setParent(null);
             }
         } else {
-            return false;
+            remove(replacement);
+            Node<E> parent = node.getParent();
+            replacement.setParent(parent);
+            if (parent != null) {
+                if (parent.getLeftChild() == node) {
+                    parent.setLeftChild(replacement);
+                } else {
+                    parent.setRightChild(replacement);
+                }
+            } else {
+                System.out.println("  setting Root" + replacement.getKey());
+                root = replacement;
+                System.out.println("  ²&New Root: " + root.getKey());
+            }
+            replacement.setRightChild(node.getRightChild());
+            replacement.setLeftChild(node.getLeftChild());
         }
     }
 
