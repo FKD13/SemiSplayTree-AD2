@@ -6,6 +6,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     private int splaySize;
     private Node<E> root;
+    private int size;
 
     /**
      * Constructor for the SemiSplayTree
@@ -13,6 +14,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
      */
     public SemiSplayTree(int splaySize) {
         this.splaySize = splaySize;
+        size = 0;
     }
 
     //public for testing purposes
@@ -31,11 +33,13 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         Node<E> node = search(key);
         if (node == null) {
             root = new Node<>(key);
+            size++;
             return true;
         } else if (node.getKey() == key) {
             return false;
         } else {
             node.addChild(key);
+            size++;
             return true;
         }
     }
@@ -51,6 +55,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         Node<E> node = search(key);
         if (node.getKey().equals(key)) {
             remove(node);
+            size--;
             return true;
         } else {
             return false;
@@ -98,7 +103,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override

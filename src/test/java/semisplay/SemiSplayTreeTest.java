@@ -72,4 +72,18 @@ public class SemiSplayTreeTest {
             Assert.assertSame(false, tree.contains(i));
         }
     }
+
+    @Test
+    public void testSize() {
+        SearchTree<Integer> tree = new SemiSplayTree<>(7);
+        for (int i = 0; i < 100; i++) {
+            Assert.assertEquals(i, tree.size());
+            Assert.assertTrue(tree.add(i));
+        }
+        for (int i = 0; i < 100; i++) {
+            Assert.assertEquals(100-i, tree.size());
+            Assert.assertTrue(tree.remove(i));
+        }
+        Assert.assertEquals(0, tree.size());
+    }
 }
