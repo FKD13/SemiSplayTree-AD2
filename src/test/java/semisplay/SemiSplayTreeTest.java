@@ -3,7 +3,12 @@ package semisplay;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Iterator;
+import java.util.Random;
+
 public class SemiSplayTreeTest {
+
+    private Random rg = new Random();
 
     @Test
     public void testAdd() {
@@ -85,5 +90,51 @@ public class SemiSplayTreeTest {
             Assert.assertTrue(tree.remove(i));
         }
         Assert.assertEquals(0, tree.size());
+    }
+
+    @Test
+    public void testDepthInacurate() {
+        int[] ints = new int[]{1, 1+2, 1+2+4, 1+2+4+8, 1+2+4+8+16, 1+2+4+8+16+32, 1+2+4+8+16+32+64};
+        for (int i = 0; i < ints.length; i++) {
+            SearchTree<Integer> tree = new SemiSplayTree<>(7);
+            for (int j = 0; j < ints[i]; j++) {
+                Assert.assertTrue(tree.add(j));
+            }
+            int depth = tree.depth();
+            Assert.assertTrue(depth >= i && depth < ints[i]);
+        }
+    }
+
+    @Test
+    public void testIterator() {
+        SearchTree<Integer> tree = new SemiSplayTree<>(7);
+        for (int i = 0; i < 100; i++) {
+            Assert.assertTrue(tree.add(i));
+        }
+        Iterator<Integer> iterator = tree.iterator();
+        int n = 0;
+        while (iterator.hasNext()) {
+            Assert.assertEquals(n, (long) iterator.next());
+            n++;
+        }
+    }
+
+    @Test
+    public void testIteratorRandom() {
+        for (int i = 0; i < 100; i++) {
+            SearchTree<Integer> tree = new SemiSplayTree<>(7);
+            for (int j = 0; j < 1000*i; j++) {
+                tree.add(rg.nextInt());
+            }
+            Iterator<Integer> iterator = tree.iterator();
+            if (iterator.hasNext()) {
+                int previous = iterator.next();
+                while (iterator.hasNext()) {
+                    int cur = iterator.next();
+                    Assert.assertTrue(previous <= cur);
+                    previous = cur;
+                }
+            }
+        }
     }
 }

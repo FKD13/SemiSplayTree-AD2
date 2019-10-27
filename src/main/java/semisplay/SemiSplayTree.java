@@ -1,6 +1,7 @@
 package semisplay;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
@@ -108,11 +109,18 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     @Override
     public int depth() {
+        if (root != null) {
+            return root.depth() - 1;
+        }
         return 0;
     }
 
     @Override
-    public Iterator iterator() {
-        return null;
+    public Iterator<E> iterator() {
+        LinkedList<E> list = new LinkedList<>();
+        if (root != null) {
+            root.addToIterable(list);
+        }
+        return list.iterator();
     }
 }

@@ -1,5 +1,7 @@
 package semisplay;
 
+import java.util.LinkedList;
+
 public class Node<E extends Comparable<E>> {
     private Node<E> rightChild;
     private Node<E> leftChild;
@@ -99,13 +101,30 @@ public class Node<E extends Comparable<E>> {
         }
     }
 
-    //public void replaceWith(Node<E> node) {
-    //    node.getParent();
-    //    node.setParent(parent);
-    //    node.setLeftChild(leftChild);
-    //    node.setRightChild(rightChild);
-    //    parent.addChild(node);
-    //    leftChild.setParent(node);
-    //    rightChild.setParent(node);
-    //}
+    public int depth() {
+        int max = 0;
+        if (rightChild != null) {
+            int n = rightChild.depth();
+            if (max < n) {
+                max = n;
+            }
+        }
+        if (leftChild != null) {
+            int n = leftChild.depth();
+            if (max < n) {
+                max = n;
+            }
+        }
+        return max + 1;
+    }
+
+    public void addToIterable(LinkedList<E> list) {
+        if (leftChild != null) {
+            leftChild.addToIterable(list);
+        }
+        list.add(key);
+        if (rightChild != null) {
+            rightChild.addToIterable(list);
+        }
+    }
 }
