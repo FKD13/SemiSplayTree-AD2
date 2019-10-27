@@ -37,18 +37,6 @@ public class SemiSplayTreeTest {
     }
 
     @Test
-    public void testBasicSearch() {
-        SemiSplayTree<Integer> tree = new SemiSplayTree<>(7);
-        for (int i = 0; i < 100; i++) {
-            Assert.assertSame(true, tree.add(i));
-        }
-        for (int i = 0; i < 100; i++) {
-            Assert.assertSame(i, tree.search(i).getKey());
-        }
-    }
-
-
-    @Test
     public void testRemove() {
         SearchTree<Integer> tree = new SemiSplayTree<>(7);
         for (int i = 0; i < 1000; i++) {
