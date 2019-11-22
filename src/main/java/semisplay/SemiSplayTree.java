@@ -51,6 +51,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         } else {
             node.addChild(key);
             size++;
+            splay(node);
             return true;
         }
     }
@@ -124,6 +125,61 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             }
         }
         node.reset();
+    }
+
+    private void splay(Node<E> startnode) {
+        Node[] nodes = new Node[splaySize];
+        // create the path
+        int i = 1;
+        nodes[0] = startnode;
+        while (i < splaySize && nodes[i-1] != null) {
+            nodes[i] = nodes[i-1].getParent();
+            i++;
+        }
+        if (i != splaySize || nodes[i-1] == null) {
+            return;
+        }
+        // save the attach point
+        for (Node n : nodes) {
+            if (n != null) {
+                System.out.println(n.getKey());
+            } else {
+                System.out.println("null");
+            }
+        }
+
+        Node attach_point = nodes[i-1].getParent();
+        Node[] sortedNodes = new Node[splaySize];
+        Node[] outsideTrees = new Node[splaySize + 1];
+
+        // 0: pointers for the nodes, 1: pointers for the outiside trees
+        int[] rightPtr = new int[]{splaySize-1, splaySize}; // most right free place
+        int[] leftPtr = new int[]{0, 0}; // most left free place
+        while (i > 1) {
+            i--;
+            // next node in path is right child
+            if (nodes[i].getRightChild() ==  nodes[i-1]) {
+                sortedNodes[leftPtr[0]] = nodes[i]; // place current node at left side of array
+                outsideTrees[leftPtr[1]] = nodes[i].getLeftChild();
+                leftPtr[0]++;
+                leftPtr[1]++;
+            } else { // next node in path is left child
+                sortedNodes[rightPtr[0]] = nodes[i]; // place current node at right side of array
+                outsideTrees[rightPtr[1]] = nodes[i].getRightChild();
+                rightPtr[0]--;
+                rightPtr[1]--;
+            }
+        }
+        // handle last element
+        assert rightPtr[0] == leftPtr[0]; // left and right pointer should be the same a this point
+        sortedNodes[rightPtr[0]] = nodes[i]; // place last element in the list
+        outsideTrees[leftPtr[1]] = nodes[i].getLeftChild(); // add left child
+        outsideTrees[rightPtr[1]] = nodes[i].getRightChild(); // add right child
+
+        for (Node n : sortedNodes) {
+            System.out.println(n.getKey());
+        }
+        splay((Node<E>) attach_point);
     }
 
     /**
