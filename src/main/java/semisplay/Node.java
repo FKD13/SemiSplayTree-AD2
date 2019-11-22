@@ -185,4 +185,9 @@ public class Node<E extends Comparable<E>> {
             rightChild.addToIterable(list);
         }
     }
+
+    @Override
+    public String toString() {
+        return key + " -> |" + leftChild + "| & |" + rightChild + "| ";
+    }
 }

@@ -51,7 +51,8 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         } else {
             node.addChild(key);
             size++;
-            splay(node);
+            splay(node.searchChild(key));
+            //System.out.println(root);
             return true;
         }
     }
@@ -127,8 +128,10 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         node.reset();
     }
 
+    private int outsideTreePos = 0;
+
     private void splay(Node<E> startnode) {
-        Node[] nodes = new Node[splaySize];
+        Node<E>[] nodes = (Node<E>[]) new Node[splaySize];
         // create the path
         int i = 1;
         nodes[0] = startnode;
@@ -139,18 +142,11 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         if (i != splaySize || nodes[i-1] == null) {
             return;
         }
-        // save the attach point
-        for (Node n : nodes) {
-            if (n != null) {
-                System.out.println(n.getKey());
-            } else {
-                System.out.println("null");
-            }
-        }
 
         Node attach_point = nodes[i-1].getParent();
-        Node[] sortedNodes = new Node[splaySize];
-        Node[] outsideTrees = new Node[splaySize + 1];
+        Node<E>[] sortedNodes = (Node<E>[]) new Node[splaySize];
+        Node<E>[] outsideTrees = (Node<E>[]) new Node[splaySize + 1];
+        outsideTreePos = 0;
 
         // 0: pointers for the nodes, 1: pointers for the outiside trees
         int[] rightPtr = new int[]{splaySize-1, splaySize}; // most right free place
@@ -171,15 +167,76 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             }
         }
         // handle last element
+        i--;
         assert rightPtr[0] == leftPtr[0]; // left and right pointer should be the same a this point
         sortedNodes[rightPtr[0]] = nodes[i]; // place last element in the list
         outsideTrees[leftPtr[1]] = nodes[i].getLeftChild(); // add left child
         outsideTrees[rightPtr[1]] = nodes[i].getRightChild(); // add right child
 
-        for (Node n : sortedNodes) {
-            System.out.println(n.getKey());
+        for (Node n: sortedNodes) {
+            n.reset();
+        }
+        Node<E> topNode = buildRecursive(sortedNodes, outsideTrees, 0, splaySize);
+        //System.out.println(topNode);
+        if (attach_point == null) {
+            root = topNode;
+        } else {
+            attach_point.addChild(topNode);
         }
         splay((Node<E>) attach_point);
+    }
+
+
+    private Node<E> buildRecursive(Node<E>[] sortedNodes, Node<E>[] outsideTrees, int start, int end) {
+        //System.out.println(start + " " + end);
+        if (start == end) {
+            return null;
+        }
+        if (start+1 == end) {
+            sortedNodes[start].reset();
+            //System.out.println(sortedNodes[start].getKey() + "<--");
+            if (outsideTrees[outsideTreePos] != null) {
+                sortedNodes[start].setLeftChild(outsideTrees[outsideTreePos]);
+                outsideTrees[outsideTreePos].setParent(sortedNodes[start]);
+            }
+            if (outsideTrees[outsideTreePos+1] != null) {
+                sortedNodes[start].setRightChild(outsideTrees[outsideTreePos + 1]);
+                outsideTrees[outsideTreePos + 1].setParent(sortedNodes[start]);
+            }
+            outsideTreePos += 2;
+            return sortedNodes[start];
+        } else {
+            Node <E> tempRoot = sortedNodes[(int) Math.floor((end-start)/2.0)+start];
+            //System.out.println(tempRoot.getKey() + "<--");
+            tempRoot.reset();
+            Node<E> left = buildRecursive(sortedNodes, outsideTrees, start, (int) Math.floor((end-start)/2.0)+start);
+            Node<E> right = buildRecursive(sortedNodes, outsideTrees, (int) Math.floor((end-start)/2.0)+start + 1, end);
+            //System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+            //for (Node n : sortedNodes) {
+            //    System.out.println(n);
+            //}
+            //System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            //System.out.println("");
+            //System.out.println(left);
+            //System.out.println(right);
+            if (left != null) {
+                tempRoot.setLeftChild(left);
+                left.setParent(tempRoot);
+            } else {
+                tempRoot.setLeftChild(outsideTrees[outsideTreePos]);
+                outsideTrees[outsideTreePos].setParent(tempRoot);
+                outsideTreePos++;
+            }
+            if (right != null) {
+                tempRoot.setRightChild(right);
+                right.setParent(tempRoot);
+            } else {
+                tempRoot.setRightChild(outsideTrees[outsideTreePos]);
+                outsideTrees[outsideTreePos].setParent(tempRoot);
+                outsideTreePos++;
+            }
+            return tempRoot;
+        }
     }
 
     /**
