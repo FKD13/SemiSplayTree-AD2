@@ -11,30 +11,34 @@ public class SemiSplayTreeBenchmark {
     private final int runs = 100;
 
     @Test
-    public void addBenchmarkWorstCase() {
+    public void addBenchmarkWorstCaseOrdinairyTree() {
         System.out.println("Warming up the tree");
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10000000; i++) {
             SemiSplayTree<Integer> tree = new SemiSplayTree<>(5);
             tree.add(1);
         }
-        System.out.println("Starting Worst Case Benchmark (Add)");
+        System.out.println("Starting Worst Case Benchmark (For ordinary trees) (Add)");
         System.out.println("-----------------------------------------------------------");
         int factor = 1000;
         for (int i = 0; i < 100; i+=10) {
-            long start = System.currentTimeMillis();
-            SemiSplayTree<Integer> tree = new SemiSplayTree<>(7);
-            for (int j = 0; j < factor*i; j++) {
-                tree.add(j);
+            long[] runTimes = new long[runs];
+            for (int r = 0; r < runs; r++) {
+                long start = System.currentTimeMillis();
+                SemiSplayTree<Integer> tree = new SemiSplayTree<>(100);
+                for (int j = 0; j < factor*i; j++) {
+                    tree.add(j);
+                }
+                long end = System.currentTimeMillis();
+                runTimes[r] = end-start;
             }
-            long end = System.currentTimeMillis();
-            System.out.println(factor*i + ": Completed in: " + (end - start) + " ms");
+            System.out.println(factor*i + ": Completed in: " + average(runTimes) + " ms");
         }
     }
 
     @Test
     public void addBenchmarkRandom() {
         System.out.println("Warming up the tree");
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10000000; i++) {
             SemiSplayTree<Integer> tree = new SemiSplayTree<>(5);
             tree.add(1);
         }
@@ -50,7 +54,7 @@ public class SemiSplayTreeBenchmark {
                     randoms[j] = rg.nextInt();
                 }
                 long start = System.currentTimeMillis();
-                SemiSplayTree<Integer> tree = new SemiSplayTree<>(7);
+                SemiSplayTree<Integer> tree = new SemiSplayTree<>(100);
                 for (int j = 0; j < factor*i; j++) {
                     tree.add(randoms[j]);
                 }

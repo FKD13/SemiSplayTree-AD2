@@ -38,6 +38,9 @@ public class Node<E extends Comparable<E>> {
      */
     public void setRightChild(Node<E> rightChild) {
         this.rightChild = rightChild;
+        if (rightChild != null) {
+            rightChild.setParent(this);
+        }
     }
 
     /**
@@ -46,6 +49,9 @@ public class Node<E extends Comparable<E>> {
      */
     public void setLeftChild(Node<E> leftChild) {
         this.leftChild = leftChild;
+        if (leftChild != null) {
+            leftChild.setParent(this);
+        }
     }
 
     /**

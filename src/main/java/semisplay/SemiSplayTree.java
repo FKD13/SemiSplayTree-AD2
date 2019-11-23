@@ -52,7 +52,6 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             node.addChild(key);
             size++;
             splay(node.searchChild(key));
-            //System.out.println(root);
             return true;
         }
     }
@@ -118,12 +117,6 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             }
             replacement.setRightChild(node.getRightChild());
             replacement.setLeftChild(node.getLeftChild());
-            if (replacement.getRightChild() != null) {
-                replacement.getRightChild().setParent(replacement);
-            }
-            if (replacement.getLeftChild() != null) {
-                replacement.getLeftChild().setParent(replacement);
-            }
         }
         node.reset();
     }
@@ -131,108 +124,99 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     private int outsideTreePos = 0;
 
     private void splay(Node<E> startnode) {
-        Node<E>[] nodes = (Node<E>[]) new Node[splaySize];
-        // create the path
-        int i = 1;
-        nodes[0] = startnode;
-        while (i < splaySize && nodes[i-1] != null) {
-            nodes[i] = nodes[i-1].getParent();
-            i++;
-        }
-        if (i != splaySize || nodes[i-1] == null) {
-            return;
-        }
-
-        Node attach_point = nodes[i-1].getParent();
-        Node<E>[] sortedNodes = (Node<E>[]) new Node[splaySize];
-        Node<E>[] outsideTrees = (Node<E>[]) new Node[splaySize + 1];
-        outsideTreePos = 0;
-
-        // 0: pointers for the nodes, 1: pointers for the outiside trees
-        int[] rightPtr = new int[]{splaySize-1, splaySize}; // most right free place
-        int[] leftPtr = new int[]{0, 0}; // most left free place
-        while (i > 1) {
-            i--;
-            // next node in path is right child
-            if (nodes[i].getRightChild() ==  nodes[i-1]) {
-                sortedNodes[leftPtr[0]] = nodes[i]; // place current node at left side of array
-                outsideTrees[leftPtr[1]] = nodes[i].getLeftChild();
-                leftPtr[0]++;
-                leftPtr[1]++;
-            } else { // next node in path is left child
-                sortedNodes[rightPtr[0]] = nodes[i]; // place current node at right side of array
-                outsideTrees[rightPtr[1]] = nodes[i].getRightChild();
-                rightPtr[0]--;
-                rightPtr[1]--;
+        while (startnode != null) {
+            Node<E>[] nodes = (Node<E>[]) new Node[splaySize];
+            // create the path
+            int i = 1;
+            nodes[0] = startnode;
+            while (i < splaySize && nodes[i - 1] != null) {
+                nodes[i] = nodes[i - 1].getParent();
+                i++;
             }
-        }
-        // handle last element
-        i--;
-        assert rightPtr[0] == leftPtr[0]; // left and right pointer should be the same a this point
-        sortedNodes[rightPtr[0]] = nodes[i]; // place last element in the list
-        outsideTrees[leftPtr[1]] = nodes[i].getLeftChild(); // add left child
-        outsideTrees[rightPtr[1]] = nodes[i].getRightChild(); // add right child
+            if (i != splaySize || nodes[i - 1] == null) {
+                return;
+            }
 
-        for (Node n: sortedNodes) {
-            n.reset();
+            Node attach_point = nodes[i - 1].getParent();
+            Node<E>[] sortedNodes = (Node<E>[]) new Node[splaySize];
+            Node<E>[] outsideTrees = (Node<E>[]) new Node[splaySize + 1];
+            outsideTreePos = 0;
+
+            // 0: pointers for the nodes, 1: pointers for the outiside trees
+            int[] rightPtr = new int[]{splaySize - 1, splaySize}; // most right free place
+            int[] leftPtr = new int[]{0, 0}; // most left free place
+            while (i > 1) {
+                i--;
+                // next node in path is right child
+                if (nodes[i].getRightChild() == nodes[i - 1]) {
+                    sortedNodes[leftPtr[0]] = nodes[i]; // place current node at left side of array
+                    outsideTrees[leftPtr[1]] = nodes[i].getLeftChild();
+                    leftPtr[0]++;
+                    leftPtr[1]++;
+                } else { // next node in path is left child
+                    sortedNodes[rightPtr[0]] = nodes[i]; // place current node at right side of array
+                    outsideTrees[rightPtr[1]] = nodes[i].getRightChild();
+                    rightPtr[0]--;
+                    rightPtr[1]--;
+                }
+            }
+            // handle last element
+            i--;
+            assert rightPtr[0] == leftPtr[0]; // left and right pointer should be the same a this point
+            sortedNodes[rightPtr[0]] = nodes[i]; // place last element in the list
+            outsideTrees[leftPtr[1]] = nodes[i].getLeftChild(); // add left child
+            outsideTrees[rightPtr[1]] = nodes[i].getRightChild(); // add right child
+
+            for (Node n : sortedNodes) {
+                n.reset();
+            }
+            Node<E> topNode = buildRecursive(sortedNodes, outsideTrees, 0, splaySize);
+            if (attach_point == null) {
+                root = topNode;
+            } else {
+                attach_point.addChild(topNode);
+            }
+            startnode = attach_point;
         }
-        Node<E> topNode = buildRecursive(sortedNodes, outsideTrees, 0, splaySize);
-        //System.out.println(topNode);
-        if (attach_point == null) {
-            root = topNode;
-        } else {
-            attach_point.addChild(topNode);
-        }
-        splay((Node<E>) attach_point);
     }
 
 
     private Node<E> buildRecursive(Node<E>[] sortedNodes, Node<E>[] outsideTrees, int start, int end) {
-        //System.out.println(start + " " + end);
         if (start == end) {
             return null;
         }
         if (start+1 == end) {
             sortedNodes[start].reset();
-            //System.out.println(sortedNodes[start].getKey() + "<--");
             if (outsideTrees[outsideTreePos] != null) {
                 sortedNodes[start].setLeftChild(outsideTrees[outsideTreePos]);
-                outsideTrees[outsideTreePos].setParent(sortedNodes[start]);
             }
             if (outsideTrees[outsideTreePos+1] != null) {
                 sortedNodes[start].setRightChild(outsideTrees[outsideTreePos + 1]);
-                outsideTrees[outsideTreePos + 1].setParent(sortedNodes[start]);
             }
             outsideTreePos += 2;
             return sortedNodes[start];
         } else {
             Node <E> tempRoot = sortedNodes[(int) Math.floor((end-start)/2.0)+start];
-            //System.out.println(tempRoot.getKey() + "<--");
+
             tempRoot.reset();
             Node<E> left = buildRecursive(sortedNodes, outsideTrees, start, (int) Math.floor((end-start)/2.0)+start);
             Node<E> right = buildRecursive(sortedNodes, outsideTrees, (int) Math.floor((end-start)/2.0)+start + 1, end);
-            //System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-            //for (Node n : sortedNodes) {
-            //    System.out.println(n);
-            //}
-            //System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-            //System.out.println("");
-            //System.out.println(left);
-            //System.out.println(right);
             if (left != null) {
                 tempRoot.setLeftChild(left);
                 left.setParent(tempRoot);
             } else {
-                tempRoot.setLeftChild(outsideTrees[outsideTreePos]);
-                outsideTrees[outsideTreePos].setParent(tempRoot);
+                if (outsideTrees[outsideTreePos] != null) {
+                    tempRoot.setLeftChild(outsideTrees[outsideTreePos]);
+                }
                 outsideTreePos++;
             }
             if (right != null) {
                 tempRoot.setRightChild(right);
                 right.setParent(tempRoot);
             } else {
-                tempRoot.setRightChild(outsideTrees[outsideTreePos]);
-                outsideTrees[outsideTreePos].setParent(tempRoot);
+                if (outsideTrees[outsideTreePos] != null) {
+                    tempRoot.setRightChild(outsideTrees[outsideTreePos]);
+                }
                 outsideTreePos++;
             }
             return tempRoot;
