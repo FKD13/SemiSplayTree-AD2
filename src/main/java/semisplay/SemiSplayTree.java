@@ -97,8 +97,10 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
      * @param node the {@link Node node} to remove.
      */
     private void remove(Node<E> node) {
+        // get replacement node
         Node<E> replacement = node.getBiggestLeftChild();
-        if (replacement.getKey() == node.getKey()) {
+        // if replacement == node
+        if (replacement.getKey().equals(node.getKey())) {
             if (node.getParent() != null) {
                 node.getParent().replace(node, node.getRightChild());
                 if (node.getRightChild() != null) {
@@ -132,7 +134,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     private Node<E> removeBiggestLeftChild(Node<E> node) {
-        node.getParent().replace(node, node.getRightChild());
+        node.getParent().replace(node, node.getLeftChild());
         return node.getParent();
     }
 

@@ -150,12 +150,12 @@ public class Node<E extends Comparable<E>> {
      * @param newNode the new child {@link Node<E> Node}.
      */
     public void replace(Node<E> original, Node<E> newNode) {
-        if (leftChild != null && leftChild.getKey() == original.getKey()) {
+        if (leftChild != null && leftChild.getKey().equals(original.getKey())) {
             leftChild = newNode;
             if (newNode != null) {
                 newNode.setParent(this);
             }
-        } else if (rightChild != null && rightChild.getKey() == original.getKey()) {
+        } else if (rightChild != null && rightChild.getKey().equals(original.getKey())) {
             rightChild = newNode;
             if (newNode != null) {
                 newNode.setParent(this);
