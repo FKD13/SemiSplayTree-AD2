@@ -45,11 +45,13 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     public boolean add(E key) {
         state = null;
         Node<E> node = search(key);
+        //System.out.println(node);
         if (node == null) {
             root = new Node<>(key);
             size++;
             return true;
-        } else if (node.getKey() == key) {
+        } else if (node.getKey().equals(key)) {
+            splay(node);
             return false;
         } else {
             node.addChild(key);
@@ -66,8 +68,9 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
      */
     @Override
     public boolean contains(E key) {
-        Node result = search(key);
-        return result != null && result.getKey() == key;
+        Node<E> result = search(key);
+        splay(result);
+        return result != null && result.getKey().equals(key);
     }
 
     /**
@@ -84,6 +87,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             size--;
             return true;
         } else {
+            splay(node);
             return false;
         }
     }
@@ -100,6 +104,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
                 if (node.getRightChild() != null) {
                     node.getRightChild().setParent(node.getParent());
                 }
+                splay(node.getParent());
             } else {
                 root = node.getRightChild();
                 if (root != null) {
@@ -107,7 +112,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
                 }
             }
         } else {
-            remove(replacement);
+            Node<E> splayStart = removeBiggestLeftChild(replacement);
             Node<E> parent = node.getParent();
             replacement.setParent(parent);
             if (parent != null) {
@@ -121,8 +126,14 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             }
             replacement.setRightChild(node.getRightChild());
             replacement.setLeftChild(node.getLeftChild());
+            splay(splayStart);
         }
         node.reset();
+    }
+
+    private Node<E> removeBiggestLeftChild(Node<E> node) {
+        node.getParent().replace(node, node.getRightChild());
+        return node.getParent();
     }
 
     /**

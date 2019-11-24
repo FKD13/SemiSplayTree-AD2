@@ -152,8 +152,14 @@ public class Node<E extends Comparable<E>> {
     public void replace(Node<E> original, Node<E> newNode) {
         if (leftChild != null && leftChild.getKey() == original.getKey()) {
             leftChild = newNode;
+            if (newNode != null) {
+                newNode.setParent(this);
+            }
         } else if (rightChild != null && rightChild.getKey() == original.getKey()) {
             rightChild = newNode;
+            if (newNode != null) {
+                newNode.setParent(this);
+            }
         }
     }
 
