@@ -155,30 +155,27 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
                 Node<E>[] outsideTrees = (Node<E>[]) new Node[splaySize + 1];
                 outsideTreePos = 0;
 
-                // 0: pointers for the nodes, 1: pointers for the outiside trees
-                int[] rightPtr = new int[]{splaySize - 1, splaySize}; // most right free place
-                int[] leftPtr = new int[]{0, 0}; // most left free place
+                int leftPtr = 0; // most left free space
+                int rightPtr = splaySize-1; // most right free space
                 while (i > 1) {
                     i--;
                     // next node in path is right child
                     if (nodes[i].getRightChild() == nodes[i - 1]) {
-                        sortedNodes[leftPtr[0]] = nodes[i]; // place current node at left side of array
-                        outsideTrees[leftPtr[1]] = nodes[i].getLeftChild();
-                        leftPtr[0]++;
-                        leftPtr[1]++;
+                        sortedNodes[leftPtr] = nodes[i]; // place current node at left side of array
+                        outsideTrees[leftPtr] = nodes[i].getLeftChild();
+                        leftPtr++;
                     } else { // next node in path is left child
-                        sortedNodes[rightPtr[0]] = nodes[i]; // place current node at right side of array
-                        outsideTrees[rightPtr[1]] = nodes[i].getRightChild();
-                        rightPtr[0]--;
-                        rightPtr[1]--;
+                        sortedNodes[rightPtr] = nodes[i]; // place current node at right side of array
+                        outsideTrees[rightPtr+1] = nodes[i].getRightChild();
+                        rightPtr--;
                     }
                 }
                 // handle last element
                 i--;
-                assert rightPtr[0] == leftPtr[0]; // left and right pointer should be the same a this point
-                sortedNodes[rightPtr[0]] = nodes[i]; // place last element in the list
-                outsideTrees[leftPtr[1]] = nodes[i].getLeftChild(); // add left child
-                outsideTrees[rightPtr[1]] = nodes[i].getRightChild(); // add right child
+                assert rightPtr == leftPtr; // left and right pointer should be the same a this point
+                sortedNodes[rightPtr] = nodes[i]; // place last element in the list
+                outsideTrees[leftPtr] = nodes[i].getLeftChild(); // add left child
+                outsideTrees[rightPtr+1] = nodes[i].getRightChild(); // add right child
 
                 for (Node n : sortedNodes) {
                     n.reset();
