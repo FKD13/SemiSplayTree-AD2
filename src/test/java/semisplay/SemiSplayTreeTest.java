@@ -105,7 +105,8 @@ public class SemiSplayTreeTest {
         for (int i = 1; i < 100; i++) {
             SearchTree<Integer> tree = new SemiSplayTree<>(i);
             for (int j = 0; j < 10000; j++) {
-                Assert.assertTrue(tree.add(rg.nextInt()));
+                int k = rg.nextInt();
+                Assert.assertNotEquals(tree.contains(k), tree.add(k));
             }
         }
     }
@@ -138,15 +139,5 @@ public class SemiSplayTreeTest {
         }
         tree.add(100);
         Assert.assertTrue(100 > tree.depth());
-    }
-
-    @Test
-    public void testElementMovesUp() {
-        for (int i = 0; i < 100; i++) {
-
-            for (int j = 0; j < 10000; j++) {
-
-            }
-        }
     }
 }
