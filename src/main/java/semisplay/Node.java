@@ -10,7 +10,7 @@ public class Node<E extends Comparable<E>> {
 
     /**
      * Constructor
-     * @param key the key of the {@link Node Node}
+     * @param key the key of the {@link Node<E> Node}
      */
     public Node(E key) {
         this.key = key;
@@ -18,7 +18,7 @@ public class Node<E extends Comparable<E>> {
 
     /**
      * Simple getter
-     * @return the parent {@link Node Node}.
+     * @return the parent {@link Node<E> Node}.
      */
     public Node<E> getParent() {
         return parent;
@@ -26,7 +26,7 @@ public class Node<E extends Comparable<E>> {
 
     /**
      * Simple setter
-     * @param parent the new parent {@link Node Node}.
+     * @param parent the new parent {@link Node<E> Node}.
      */
     public void setParent(Node<E> parent) {
         this.parent = parent;
@@ -34,7 +34,7 @@ public class Node<E extends Comparable<E>> {
 
     /**
      * Simple setter
-     * @param rightChild the new rightChild {@link Node Node}.
+     * @param rightChild the new rightChild {@link Node<E> Node}.
      */
     public void setRightChild(Node<E> rightChild) {
         this.rightChild = rightChild;
@@ -45,7 +45,7 @@ public class Node<E extends Comparable<E>> {
 
     /**
      * Simple setter
-     * @param leftChild the new leftChild {@link Node Node}.
+     * @param leftChild the new leftChild {@link Node<E> Node}.
      */
     public void setLeftChild(Node<E> leftChild) {
         this.leftChild = leftChild;
@@ -56,7 +56,7 @@ public class Node<E extends Comparable<E>> {
 
     /**
      * Simple getter
-     * @return the rightChild {@link Node Node}.
+     * @return the rightChild {@link Node<E> Node}.
      */
     public Node<E> getRightChild() {
         return rightChild;
@@ -64,7 +64,7 @@ public class Node<E extends Comparable<E>> {
 
     /**
      * Simple getter
-     * @return the leftChild {@link Node Node}.
+     * @return the leftChild {@link Node<E> Node}.
      */
     public Node<E> getLeftChild() {
         return leftChild;
@@ -79,9 +79,9 @@ public class Node<E extends Comparable<E>> {
     }
 
     /**
-     * This method will return the {@link Node Node} the closest to the given key.
+     * This method will return the {@link Node<E> Node} the closest to the given key.
      * @param key the searched value.
-     * @return {@link Node Node}
+     * @return {@link Node<E> Node}
      */
     public Node<E> searchChild(E key) {
         int compared = key.compareTo(this.key);
@@ -89,17 +89,17 @@ public class Node<E extends Comparable<E>> {
     }
 
     /**
-     * Add a given value as a child of this {@link Node Node}.
+     * Add a given value as a child of this {@link Node<E> Node}.
      * @param key the value to add
-     * @return the {@link Node Node} that has been added.
+     * @return the {@link Node<E> Node} that has been added.
      */
     public Node<E> addChild(E key) {
         return addChild(new Node<>(key));
     }
 
     /**
-     * Will add the given node as child of this {@link semisplay.Node node}.
-     * When the keys are equal nothing will happen and this {@link semisplay.Node node} will be returned.
+     * Will add the given node as child of this {@link semisplay.Node<E> node}.
+     * When the keys are equal nothing will happen and this {@link semisplay.Node<E> node} will be returned.
      * Otherwise the node will be added as a child and returned. The adding can overwrite existing children.
      * @param node The node to add.
      * @return The result node.
@@ -122,7 +122,7 @@ public class Node<E extends Comparable<E>> {
     }
 
     /**
-     * This method will return the biggest leftChild of this {@link Node Node}.
+     * This method will return the biggest leftChild of this {@link Node<E> Node}.
      * @return the biggest leftChild.
      */
     public Node<E> getBiggestLeftChild() {
@@ -136,7 +136,7 @@ public class Node<E extends Comparable<E>> {
     }
 
     /**
-     * this method resets the Parent, left- and rightChild {@link Node Node} to null.
+     * this method resets the Parent, left- and rightChild {@link Node<E> Node} to null.
      */
     public void reset() {
         leftChild = null;
@@ -145,9 +145,9 @@ public class Node<E extends Comparable<E>> {
     }
 
     /**
-     * This method will replace the given child {@link Node Node} with the new {@link Node Node}, if possible.
-     * @param original the original child {@link Node Node}.
-     * @param newNode the new child {@link Node Node}.
+     * This method will replace the given child {@link Node<E> Node} with the new {@link Node Node}, if possible.
+     * @param original the original child {@link Node<E> Node}.
+     * @param newNode the new child {@link Node<E> Node}.
      */
     public void replace(Node<E> original, Node<E> newNode) {
         if (leftChild != null && leftChild.getKey() == original.getKey()) {
@@ -158,8 +158,8 @@ public class Node<E extends Comparable<E>> {
     }
 
     /**
-     * This is a help method to calculate the depth of the {@link SemiSplayTree SemiSplayTree}
-     * @return the maximum depth from this {@link Node Node}.
+     * This is a help method to calculate the depth of the {@link SemiSplayTree<E> SemiSplayTree}
+     * @return the maximum depth from this {@link Node<E> Node}.
      */
     public int depth() {
         int max = 0;
@@ -179,7 +179,7 @@ public class Node<E extends Comparable<E>> {
     }
 
     /**
-     * A method that adds the key of the {@link Node Node} and its children to the {@link java.util.LinkedList LinkedList} in order.
+     * A method that adds the key of the {@link Node<E> Node} and its children to the {@link java.util.LinkedList<E> LinkedList} in order.
      * @param list the {@link java.util.LinkedList LinkedList} to add values to.
      */
     public void addToIterable(LinkedList<E> list) {

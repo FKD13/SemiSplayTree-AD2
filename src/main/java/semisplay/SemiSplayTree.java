@@ -8,9 +8,10 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     private int splaySize;
     private Node<E> root;
     private int size;
+    private State state = null;
 
     /**
-     * Constructor for the {@link SemiSplayTree SemiSplayTree}.
+     * Constructor for the {@link SemiSplayTree<E> SemiSplayTree}.
      * @param splaySize The splay size
      */
     public SemiSplayTree(int splaySize) {
@@ -19,12 +20,13 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     /**
-     * A help method that will search the {@link SemiSplayTree SemiSplayTree} for a given key.
-     * This will return the {@link Node Node} corresponding to the key, or the last {@link Node Node} visited before finding a null child
+     * A help method that will search the {@link SemiSplayTree<E> SemiSplayTree} for a given key.
+     * This will return the {@link Node<E> Node} corresponding to the key, or the last {@link Node<E> Node} visited before finding a null child
      * @param key The value that will be searched
      * @return the resulting node
      */
     private Node<E> search(E key) {
+        state = null;
         Node<E> node = root;
         Node<E> pNode = null;
         while (node != null && node != pNode) {
@@ -35,12 +37,13 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     /**
-     * This method will add a given key to the {@link SemiSplayTree SemiSplayTree}.
+     * This method will add a given key to the {@link SemiSplayTree<E> SemiSplayTree}.
      * @param key the value to add
      * @return True when key was added, false when key is already in the tree.
      */
     @Override
     public boolean add(E key) {
+        state = null;
         Node<E> node = search(key);
         if (node == null) {
             root = new Node<>(key);
@@ -57,7 +60,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     /**
-     * This method will search a given key in the {@link SemiSplayTree SemiSplayTree}.
+     * This method will search a given key in the {@link SemiSplayTree<E> SemiSplayTree}.
      * @param key the value to search.
      * @return true if found, false otherwise.
      */
@@ -68,12 +71,13 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     /**
-     * This method will remove a value from the {@link SemiSplayTree SemiSplayTree}.
+     * This method will remove a value from the {@link SemiSplayTree<E> SemiSplayTree}.
      * @param key the value to remove
      * @return true if found and removed, false otherwise.
      */
     @Override
     public boolean remove(E key) {
+        state = null;
         Node<E> node = search(key);
         if (node.getKey().equals(key)) {
             remove(node);
@@ -85,7 +89,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     /**
-     * A helper function that removes a given {@link Node node} from the {@link SemiSplayTree SemiSplayTree}.
+     * A helper function that removes a given {@link Node<E> node} from the {@link SemiSplayTree<E> SemiSplayTree}.
      * @param node the {@link Node node} to remove.
      */
     private void remove(Node<E> node) {
@@ -121,9 +125,17 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         node.reset();
     }
 
+    /**
+     * A field to keep track of which outsideTree to add next in the buildRecursive step.
+     */
     private int outsideTreePos = 0;
 
+    /**
+     * This method will splay the {@link SemiSplayTree<E> SemiSplayTree} if necessary.
+     * @param startnode the lowest {@link Node<E> Node} in the path, will work it's way up from there.
+     */
     private void splay(Node<E> startnode) {
+        state = null;
         while (startnode != null) {
             Node<E>[] nodes = (Node<E>[]) new Node[splaySize];
             // create the path
@@ -134,53 +146,62 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
                 i++;
             }
             if (i != splaySize || nodes[i - 1] == null) {
-                return;
-            }
-
-            Node attach_point = nodes[i - 1].getParent();
-            Node<E>[] sortedNodes = (Node<E>[]) new Node[splaySize];
-            Node<E>[] outsideTrees = (Node<E>[]) new Node[splaySize + 1];
-            outsideTreePos = 0;
-
-            // 0: pointers for the nodes, 1: pointers for the outiside trees
-            int[] rightPtr = new int[]{splaySize - 1, splaySize}; // most right free place
-            int[] leftPtr = new int[]{0, 0}; // most left free place
-            while (i > 1) {
-                i--;
-                // next node in path is right child
-                if (nodes[i].getRightChild() == nodes[i - 1]) {
-                    sortedNodes[leftPtr[0]] = nodes[i]; // place current node at left side of array
-                    outsideTrees[leftPtr[1]] = nodes[i].getLeftChild();
-                    leftPtr[0]++;
-                    leftPtr[1]++;
-                } else { // next node in path is left child
-                    sortedNodes[rightPtr[0]] = nodes[i]; // place current node at right side of array
-                    outsideTrees[rightPtr[1]] = nodes[i].getRightChild();
-                    rightPtr[0]--;
-                    rightPtr[1]--;
-                }
-            }
-            // handle last element
-            i--;
-            assert rightPtr[0] == leftPtr[0]; // left and right pointer should be the same a this point
-            sortedNodes[rightPtr[0]] = nodes[i]; // place last element in the list
-            outsideTrees[leftPtr[1]] = nodes[i].getLeftChild(); // add left child
-            outsideTrees[rightPtr[1]] = nodes[i].getRightChild(); // add right child
-
-            for (Node n : sortedNodes) {
-                n.reset();
-            }
-            Node<E> topNode = buildRecursive(sortedNodes, outsideTrees, 0, splaySize);
-            if (attach_point == null) {
-                root = topNode;
+                // stop splaying
+                startnode = null;
             } else {
-                attach_point.addChild(topNode);
+
+                Node<E> attach_point = nodes[i - 1].getParent();
+                Node<E>[] sortedNodes = (Node<E>[]) new Node[splaySize];
+                Node<E>[] outsideTrees = (Node<E>[]) new Node[splaySize + 1];
+                outsideTreePos = 0;
+
+                // 0: pointers for the nodes, 1: pointers for the outiside trees
+                int[] rightPtr = new int[]{splaySize - 1, splaySize}; // most right free place
+                int[] leftPtr = new int[]{0, 0}; // most left free place
+                while (i > 1) {
+                    i--;
+                    // next node in path is right child
+                    if (nodes[i].getRightChild() == nodes[i - 1]) {
+                        sortedNodes[leftPtr[0]] = nodes[i]; // place current node at left side of array
+                        outsideTrees[leftPtr[1]] = nodes[i].getLeftChild();
+                        leftPtr[0]++;
+                        leftPtr[1]++;
+                    } else { // next node in path is left child
+                        sortedNodes[rightPtr[0]] = nodes[i]; // place current node at right side of array
+                        outsideTrees[rightPtr[1]] = nodes[i].getRightChild();
+                        rightPtr[0]--;
+                        rightPtr[1]--;
+                    }
+                }
+                // handle last element
+                i--;
+                assert rightPtr[0] == leftPtr[0]; // left and right pointer should be the same a this point
+                sortedNodes[rightPtr[0]] = nodes[i]; // place last element in the list
+                outsideTrees[leftPtr[1]] = nodes[i].getLeftChild(); // add left child
+                outsideTrees[rightPtr[1]] = nodes[i].getRightChild(); // add right child
+
+                for (Node n : sortedNodes) {
+                    n.reset();
+                }
+                Node<E> topNode = buildRecursive(sortedNodes, outsideTrees, 0, splaySize);
+                if (attach_point == null) {
+                    root = topNode;
+                } else if (topNode != null) {
+                    attach_point.addChild(topNode);
+                }
+                startnode = attach_point;
             }
-            startnode = attach_point;
         }
     }
 
-
+    /**
+     * This recusive method will build a tree in O(n) given a sorted Array of {@link Node<E> Nodes}.
+     * @param sortedNodes an Array containing the {@link Node<E> Nodes} sorted using KeyValue, lowest in front.
+     * @param outsideTrees an Array containing the outsideTree {@link Node<E> Nodes}.
+     * @param start the Start index.
+     * @param end the end index, exclusive.
+     * @return the top {@link Node<E> Node} of the new tree.
+     */
     private Node<E> buildRecursive(Node<E>[] sortedNodes, Node<E>[] outsideTrees, int start, int end) {
         if (start == end) {
             return null;
@@ -225,7 +246,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     /**
      * A simple getter.
-     * @return the size of the {@link SemiSplayTree SemiSplayTree}.
+     * @return the size of the {@link SemiSplayTree<E> SemiSplayTree}.
      */
     @Override
     public int size() {
@@ -234,19 +255,25 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     /**
      * A simple getter.
-     * @return the depth of the {@link SemiSplayTree SemiSplayTree}.
+     * @return the depth of the {@link SemiSplayTree<E> SemiSplayTree}.
      */
     @Override
     public int depth() {
-        if (root != null) {
-            return root.depth() - 1;
+        if (state == null) {
+            if (root != null) {
+                int depth = root.depth() - 1;
+                state = new State(depth);
+                return depth;
+            }
+            return 0;
+        } else {
+            return state.getDepth();
         }
-        return 0;
     }
 
     /**
      * All elements sorted.
-     * @return {@link java.util.Iterator Iterator} containing all elements in the tree.
+     * @return {@link java.util.Iterator<E> Iterator} containing all elements in the tree.
      */
     @Override
     public Iterator<E> iterator() {
@@ -255,5 +282,10 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             root.addToIterable(list);
         }
         return list.iterator();
+    }
+
+    @Override
+    public String toString() {
+        return root != null ? root.toString() : null;
     }
 }

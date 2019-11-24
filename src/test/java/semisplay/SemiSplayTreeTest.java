@@ -80,19 +80,6 @@ public class SemiSplayTreeTest {
         Assert.assertEquals(0, tree.size());
     }
 
-    //@Test
-    //public void testDepthInacurate() {
-    //    int[] ints = new int[]{1, 1+2, 1+2+4, 1+2+4+8, 1+2+4+8+16, 1+2+4+8+16+32, 1+2+4+8+16+32+64};
-    //    for (int i = 0; i < ints.length; i++) {
-    //        SearchTree<Integer> tree = new SemiSplayTree<>(7);
-    //        for (int j = 0; j < ints[i]; j++) {
-    //            Assert.assertTrue(tree.add(j));
-    //        }
-    //        int depth = tree.depth();
-    //        Assert.assertTrue(depth >= i && depth < ints[i]);
-    //    }
-    //}
-
     @Test
     public void testIterator() {
         SearchTree<Integer> tree = new SemiSplayTree<>(7);
@@ -138,6 +125,27 @@ public class SemiSplayTreeTest {
                     Assert.assertTrue(previous <= cur);
                     previous = cur;
                 }
+            }
+        }
+    }
+
+    @Test
+    public void testDepth() {
+        SearchTree<Integer> tree = new SemiSplayTree<>(100);
+        for (int i = 0; i < 99; i++) {
+            tree.add(i);
+            Assert.assertEquals(i, tree.depth());
+        }
+        tree.add(100);
+        Assert.assertTrue(100 > tree.depth());
+    }
+
+    @Test
+    public void testElementMovesUp() {
+        for (int i = 0; i < 100; i++) {
+
+            for (int j = 0; j < 10000; j++) {
+
             }
         }
     }
